@@ -228,7 +228,7 @@ def conv_backward_naive(dout, cache):
                     dw[f] += input_zeros_pad[n, :, i * stride:i * stride + hW, j*stride:j*stride + wW] * dout[n, f, i, j]
                     dx[n, :, i:i + hW, j:j + wW] += w[f] * dout[n,f ,i, j]
 
-    dx = dx[:,:, pad:pad+h_in, pad:pad+w_in]
+    dx = dx[:,:, pad:pad+hX, pad:pad+wX]
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -458,8 +458,7 @@ def max_pool_backward_naive(dout, cache):
 
 
     for n in range(N):
-        for c in range(c_in):
-            dx[n, c, :, :] = np.multiply(x[n,c,:,:], dout[n,c,:,:])
+        dx[n, :, :, :] = np.multiply(x[n,:,:,:], dout[n,:,:,:])
 
     ###########################################################################
     #                             END OF YOUR CODE                            #

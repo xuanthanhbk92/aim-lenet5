@@ -133,14 +133,14 @@ class Lenet5ConvNet(object):
         dconv1, grads['W1'], grads['b1'] = conv_relu_pool_backward(dconv2, conv1_cache)
 
         # Add L2 regularization
-        loss += 0.5 * self.reg * (
-        np.square(W1).sum() + np.square(W2).sum() + np.square(W3).sum() + np.square(W4).sum() + np.square(W5).sum())
+        # loss += 0.5 * self.reg * (
+        # np.square(W1).sum() + np.square(W2).sum() + np.square(W3).sum() + np.square(W4).sum() + np.square(W5).sum())
 
-        grads['W1'] += self.reg * self.params['W1']
-        grads['W2'] += self.reg * self.params['W2']
-        grads['W3'] += self.reg * self.params['W3']
-        grads['W4'] += self.reg * self.params['W4']
-        grads['W5'] += self.reg * self.params['W5']
+        # grads['W1'] += self.reg * self.params['W1']
+        # grads['W2'] += self.reg * self.params['W2']
+        # grads['W3'] += self.reg * self.params['W3']
+        # grads['W4'] += self.reg * self.params['W4']
+        # grads['W5'] += self.reg * self.params['W5']
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################

@@ -34,7 +34,7 @@ def affine_forward(x, w, b):
     D = w.shape[0]
     M = w.shape[1]
 
-    out = np.zeros((N, M), int)
+    out = np.zeros((N, M))
 
     if (np.size(x)/N) != D or b.shape[0] != M:
         print('Wrong dimension, check dimension of x, w, b')
@@ -163,8 +163,6 @@ def conv_forward_naive(x, w, b, conv_param):
 
     for n in range(N):  # No. of point (mini-batch)
         for f in range(f_conv): # No. of CONV
-            # flt = np.flip(w, 2)
-            # flt = np.flip(flt,3)
             for i in range(H_out):
                 for j in range(W_out):
                     out[n, f, i, j] += np.sum(
@@ -216,9 +214,9 @@ def conv_backward_naive(dout, cache):
     input_zeros_pad = np.zeros([N, cX, hX + 2 * pad, wX + 2 * pad])
     input_zeros_pad[:, :, pad:pad + hX, pad:pad + wX] = x
 
-    dw = np.zeros(w.shape, float)
-    dx = np.zeros(input_zeros_pad.shape, float)
-    db = np.zeros(b.shape, float)
+    dw = np.zeros(w.shape)
+    dx = np.zeros(input_zeros_pad.shape)
+    db = np.zeros(b.shape)
 
     for n in range(N):
         for f in range(fW): # Iterate through all of filters
@@ -272,7 +270,7 @@ def relu_backward(dout, cache):
     ###########################################################################
     # TODO: Implement the ReLU backward pass.                                 #
     ###########################################################################
-    dx = np.zeros(x.shape, float)
+    dx = np.zeros(x.shape)
     dx = np.select([cache > 0], [dout])
     ###########################################################################
     #                             END OF YOUR CODE                            #
@@ -404,8 +402,8 @@ def max_pool_forward_naive(x, pool_param):
     h_out = (hX - pool_heigh)/stride + 1
     w_out = (wX - pool_width)/stride + 1
 
-    x_tmp = np.zeros(x.shape,int)
-    out = np.zeros((N, cX, h_out,w_out),float)
+    x_tmp = np.zeros(x.shape)
+    out = np.zeros((N, cX, h_out,w_out))
 
     for n in range(N):
         for c in range(cX):
@@ -415,7 +413,7 @@ def max_pool_forward_naive(x, pool_param):
 
                     # Create matrix saving coordinate of maximum element
                     id_max = np.argmax(x[n, c, i*stride:i*stride+pool_heigh, j*stride:j*stride+pool_width])
-                    patch_stretch = np.zeros((1, pool_heigh*pool_width), int)
+                    patch_stretch = np.zeros((1, pool_heigh*pool_width))
                     patch_stretch[0, id_max] = 1
                     patch_stretch = patch_stretch.reshape(pool_heigh, pool_width)
                     x_tmp[n, c, i * stride:i * stride + pool_heigh, j * stride:j * stride + pool_width] = patch_stretch
@@ -442,7 +440,7 @@ def max_pool_backward_naive(dout, cache):
     # TODO: Implement the max pooling backward pass                           #
     ###########################################################################
     (x, pool_param) = cache
-    dx = np.zeros(x.shape, float)
+    dx = np.zeros(x.shape)
 
     # Get dimension of input x
     N    = x.shape[0]

@@ -1,8 +1,9 @@
 import numpy as np
-from tensorflow.examples.tutorials.mnist import input_data\
+
 
 # Create compressed binary dataset (Be comment out)
 
+# from tensorflow.examples.tutorials.mnist import input_data\
 # mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 # x_train = mnist.train.images
 # y_train = mnist.train.labels

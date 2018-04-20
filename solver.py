@@ -119,7 +119,7 @@ class Solver(object):
         self.lr_decay = kwargs.pop('lr_decay',1)
         self.batch_size = kwargs.pop('batch_size',100)
         self.num_epochs = kwargs.pop('num_epochs', 10)
-        self.num_train_samples = kwargs.pop('num_train_samples', 1000)
+        self.num_train_samples = kwargs.pop('num_train_samples', None)
         self.num_val_samples = kwargs.pop('num_val_samples', None)
 
         self.checkpoint_name = kwargs.pop('checkpoint_name', None)
@@ -272,9 +272,11 @@ class Solver(object):
             last_it = (t == num_iterations - 1)
             if first_it or last_it or epoch_end:
                 train_acc = self.check_accuracy(self.X_train, self.y_train,
-                                                num_samples=self.num_train_samples)
+                                                num_samples=self.num_train_samples,
+                                                batch_size=self.batch_size)
                 val_acc = self.check_accuracy(self.X_val, self.y_val,
-                                              num_samples=self.num_val_samples)
+                                              num_samples=self.num_val_samples,
+                                              batch_size=self.batch_size)
                 self.train_acc_history.append(train_acc)
                 self.val_acc_history.append(val_acc)
                 self._save_checkpoint()

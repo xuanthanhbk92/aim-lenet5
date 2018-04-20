@@ -15,7 +15,6 @@ class Lenet5ConvNet(object):
         self.dtype = dtype
 
         c, h, w = input_dim
-
         self.input_dim = input_dim
 
         # Weights of CONV1: 6x5x5

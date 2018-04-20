@@ -204,7 +204,6 @@ def relu_backward(dout, cache):
     """
     x = cache
 
-    dx = np.zeros(x.shape)
     dx = np.select([x > 0], [dout])
 
     return dx

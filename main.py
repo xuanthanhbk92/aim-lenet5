@@ -7,7 +7,8 @@ from lenet5_model import *
 data = loaddata('dataset.npz')
 
 model = Lenet5ConvNet(input_dim=(1,28,28),
-                      weight_scale=1e-1, reg=1e-2,
+                      weight_scale=1e-1, reg=1e-3,
+                      dropout=0,seed=None,
                       dtype=np.float32)
 
 solver = Solver(model, data,

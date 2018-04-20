@@ -1,32 +1,11 @@
-from __future__ import print_function, division
 import os
 import pickle as pickle
 import optim
-
 import numpy as np
+from time import time
 
 class Solver(object):
     """
-    A Solver encapsulates all the logic necessary for training classification
-    models. The Solver performs stochastic gradient descent using different
-    update rules defined in optim.py.
-
-    The solver accepts both training and validataion data and labels so it can
-    periodically check classification accuracy on both training and validation
-    data to watch out for overfitting.
-
-    To train a model, you will first construct a Solver instance, passing the
-    model, dataset, and various optoins (learning rate, batch size, etc) to the
-    constructor. You will then call the train() method to run the optimization
-    procedure and train the model.
-
-    After the train() method returns, model.params will contain the parameters
-    that performed best on the validation set over the course of training.
-    In addition, the instance variable solver.loss_history will contain a list
-    of all losses encountered during training and the instance variables
-    solver.train_acc_history and solver.val_acc_history will be lists of the
-    accuracies of the model on the training and validation set at each epoch.
-
     Example usage might look something like this:
 
     data = {
@@ -74,8 +53,6 @@ class Solver(object):
     """
     def __init__(self, model, data, **kwargs):
         """
-        Construct a new Solver instance.
-
         Required arguments:
         - model: A model object conforming to the API described above
         - data: A dictionary of training and validation data containing:
@@ -107,11 +84,14 @@ class Solver(object):
         - checkpoint_name: If not None, then save model checkpoints here every
           epoch.
         """
+
         self.model = model
         self.X_train = data['X_train']
         self.y_train = data['y_train']
         self.X_val = data['X_val']
         self.y_val = data['y_val']
+        self.X_test = data['X_test']
+        self.y_test = data['y_test']
 
         # Unpack keyword arguments
         self.update_rule = kwargs.pop('update_rule', 'sgd')
@@ -202,6 +182,24 @@ class Solver(object):
         with open(filename, 'wb') as f:
             pickle.dump(checkpoint, f)
 
+    def load_model(self, filename):
+        print('Loading model from: %s' % filename)
+        with open(filename, 'rb') as f:
+            checkpoint = pickle.load(f)
+        self.model = checkpoint['model']
+        self.update_rule = checkpoint['update_rule']
+        self.lr_decay = checkpoint['lr_decay']
+        self.optim_configs = checkpoint['optim_config']
+        self.batch_size = checkpoint['batch_size']
+        self.num_train_samples = checkpoint['num_train_samples']
+        self.num_val_samples = checkpoint['num_val_samples']
+        self.epoch = checkpoint['epoch']
+        self.loss_history = checkpoint['loss_history']
+        self.train_acc_history = checkpoint['train_acc_history']
+        self.val_acc_history = checkpoint['val_acc_history']
+
+        print('Load completed!')
+
     def check_accuracy(self, X, y, num_samples=None, batch_size=100):
         """
         Check accuracy of the model on the provided data.
@@ -250,6 +248,8 @@ class Solver(object):
         iterations_per_epoch = max(num_train // self.batch_size, 1)
         num_iterations = self.num_epochs * iterations_per_epoch
 
+        t0 = time()     # Time counter for epoch
+        t_start_train = t0
         for t in range(num_iterations):
             self._step()
 
@@ -262,6 +262,9 @@ class Solver(object):
             # the learning rate.
             epoch_end = (t + 1) % iterations_per_epoch == 0
             if epoch_end:
+                t1 = time()
+                print('Batchsize: %d, Time per epoch: %f(s)' % (self.batch_size, t1 - t0))
+
                 self.epoch += 1
                 for k in self.optim_configs:
                     self.optim_configs[k]['learning_rate'] *= self.lr_decay
@@ -292,5 +295,19 @@ class Solver(object):
                     for k, v in self.model.params.items():
                         self.best_params[k] = v.copy()
 
+                if epoch_end:
+                    t0 = time()     # Reset timer
+
+                if last_it:
+                    t_end_train = time()
+                    print('Time training: %f(s)' % (t_end_train - t_start_train))
+
         # At the end of training swap the best params into the model
         self.model.params = self.best_params
+
+    def test_accuracy(self):
+        test_acc = self.check_accuracy(self.X_test, self.y_test,
+                                      num_samples=None,
+                                      batch_size=self.batch_size)
+
+        print('Test error: %f' % test_acc)

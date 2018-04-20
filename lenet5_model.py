@@ -3,8 +3,6 @@ import numpy as np
 from layer_utils import *
 from layers import *
 
-from lenet5_model import *
-
 class Lenet5ConvNet(object):
     def __init__(self, input_dim=(1,28,28), num_conv1=6, conv1_size=5,
                  num_conv2=16, conv2_size=5, dim_fc1=120, dim_fc2=84, num_classes=10,
@@ -69,10 +67,7 @@ class Lenet5ConvNet(object):
         W5, b5 = self.params['W5'], self.params['b5']
 
         # pass conv_param to the forward pass for the convolutional layer
-        conv1_size = W1.shape[2]
         conv1_param = {'stride': 1, 'pad': 2}
-
-        conv2_size = W2.shape[2]
         conv2_param = {'stride': 1, 'pad': 0}
 
         # pass pool_param to the forward pass for the max-pooling layer
@@ -132,14 +127,14 @@ class Lenet5ConvNet(object):
         dconv1, grads['W1'], grads['b1'] = conv_relu_pool_backward(dconv2, conv1_cache)
 
         # Add L2 regularization
-        # loss += 0.5 * self.reg * (
-        # np.square(W1).sum() + np.square(W2).sum() + np.square(W3).sum() + np.square(W4).sum() + np.square(W5).sum())
+        loss += 0.5 * self.reg * (
+        np.square(W1).sum() + np.square(W2).sum() + np.square(W3).sum() + np.square(W4).sum() + np.square(W5).sum())
 
-        # grads['W1'] += self.reg * self.params['W1']
-        # grads['W2'] += self.reg * self.params['W2']
-        # grads['W3'] += self.reg * self.params['W3']
-        # grads['W4'] += self.reg * self.params['W4']
-        # grads['W5'] += self.reg * self.params['W5']
+        grads['W1'] += self.reg * self.params['W1']
+        grads['W2'] += self.reg * self.params['W2']
+        grads['W3'] += self.reg * self.params['W3']
+        grads['W4'] += self.reg * self.params['W4']
+        grads['W5'] += self.reg * self.params['W5']
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################
